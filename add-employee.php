@@ -2,7 +2,7 @@
 include './Layoutes/header.php';
 include './Layoutes/nav.php';
 include './HelperClasses/functionalty.php';
-include './HelperClasses/FormValidator.php';
+// include './HelperClasses/FormValidator.php';
 include './HelperClasses/FormHandler.php';
 
 // Initialize variables with default values
