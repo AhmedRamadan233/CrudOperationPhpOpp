@@ -1,9 +1,10 @@
 <?php
+// include './DataBase.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/php/php-oop/employees/HelperClasses/DataBase.php';
 
 class FormHandler {
     public static function handleFormSubmission($name, $email, $department, $password) {
         $errors = [];
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!self::validateName($name)) {
                 $errors['name'] = "Name is required";
@@ -23,7 +24,13 @@ class FormHandler {
             if (empty($errors)) {
                 // Process the submitted data here
                 // For example, you can insert it into a database or perform other actions
-                echo 'Data submitted successfully';
+                $db = new DataBase();
+
+                $newPassword = $db->enc_password($password);
+                $sql = "INSERT INTO employees (name, email, department, password) 
+                        VALUES ('$name', '$email', '$department', '$newPassword')";
+                $success = $db->insert($sql);
+
             }
         }
 
@@ -45,6 +52,10 @@ class FormHandler {
 
     public static function validatePassword($password) {
         return !empty($password) && strlen($password) >= 6;
+    }
+
+    public static function insertSuccess($success) {
+        return "Added successfully";
     }
 }
 
