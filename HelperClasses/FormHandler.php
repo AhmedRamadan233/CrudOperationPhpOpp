@@ -1,10 +1,12 @@
 <?php
-// include './DataBase.php';
+// Include the 'DataBase' class
 include $_SERVER['DOCUMENT_ROOT'] . '/php/php-oop/employees/HelperClasses/DataBase.php';
 
 class FormHandler {
     public static function handleFormSubmission($name, $email, $department, $password) {
         $errors = [];
+        $success = '';
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!self::validateName($name)) {
                 $errors['name'] = "Name is required";
@@ -21,6 +23,7 @@ class FormHandler {
             if (!self::validatePassword($password)) {
                 $errors['password'] = "Password should be at least 6 characters long";
             }
+
             if (empty($errors)) {
                 // Process the submitted data here
                 // For example, you can insert it into a database or perform other actions
@@ -29,12 +32,16 @@ class FormHandler {
                 $newPassword = $db->enc_password($password);
                 $sql = "INSERT INTO employees (name, email, department, password) 
                         VALUES ('$name', '$email', '$department', '$newPassword')";
-                $success = $db->insert($sql);
+                
+                $insertResult = $db->insert($sql);
 
+                if ($insertResult === "Added successfully") {
+                    $success = "Data added successfully.";
+                }
             }
         }
 
-        return $errors;
+        return ['errors' => $errors, 'success' => $success];
     }
 
     public static function validateName($name) {
@@ -54,9 +61,11 @@ class FormHandler {
         return !empty($password) && strlen($password) >= 6;
     }
 
-    public static function insertSuccess($success) {
-        return "Added successfully";
+    public static function displaySuccess($message) {
+        if (!empty($message)) {
+            return '<div class="alert alert-success">' . $message . '</div>';
+        }
+        return '';
     }
 }
-
 ?>

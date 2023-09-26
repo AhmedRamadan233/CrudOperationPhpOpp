@@ -10,6 +10,7 @@ $email = '';
 $department = '';
 $password = '';
 $errors = [];
+$success='';
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -18,7 +19,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $department = $_POST['department'];
     $password = $_POST['password'];
 
-    $errors = FormHandler::handleFormSubmission($name, $email, $department, $password);
+    // Calling the FormHandler::handleFormSubmission method to process the form
+    $formResult = FormHandler::handleFormSubmission($name, $email, $department, $password);
+
+    $errors = $formResult['errors'];
+    $success = $formResult['success'];
 }
 
 // Rest of your code remains unchanged
@@ -31,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php echo FileProcessor::fileNameFromUrl() ?>
             </h2>
             <div class="container p-3 mt-3 custom-form">
+                <?php echo FormHandler::displaySuccess($success); ?>
                 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                     <div class="mb-3">
                         <label for="name" class="form-label">Name:</label>

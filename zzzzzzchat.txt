@@ -1,0 +1,187 @@
+
+this is a helper function contain validate 
+----------------------------------------------------------------
+<?php
+// include './DataBase.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/php/php-oop/employees/HelperClasses/DataBase.php';
+
+class FormHandler {
+    public static function handleFormSubmission($name, $email, $department, $password) {
+        $errors = [];
+        $sucess=[];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!self::validateName($name)) {
+                $errors['name'] = "Name is required";
+            }
+
+            if (!self::validateEmail($email)) {
+                $errors['email'] = "Invalid email format";
+            }
+
+            if (!self::validateDepartment($department)) {
+                $errors['department'] = "Please select a valid department";
+            }
+
+            if (!self::validatePassword($password)) {
+                $errors['password'] = "Password should be at least 6 characters long";
+            }
+            if (empty($errors)) {
+                // Process the submitted data here
+                // For example, you can insert it into a database or perform other actions
+                $db = new DataBase();
+
+                $newPassword = $db->enc_password($password);
+                $sql = "INSERT INTO employees (name, email, department, password) 
+                        VALUES ('$name', '$email', '$department', '$newPassword')";
+                $success = $db->insert($sql);
+                if (!self::insertSuccess($success)) {
+                    $sucess['success'] = "success";
+                }
+                
+            }
+        }
+
+        return $errors;
+    }
+
+    public static function validateName($name) {
+        return !empty($name);
+    }
+
+    public static function validateEmail($email) {
+        return !empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
+
+    public static function validateDepartment($department) {
+        $validDepartments = ['HR', 'IT', 'Marketing'];
+        return in_array($department, $validDepartments);
+    }
+
+    public static function validatePassword($password) {
+        return !empty($password) && strlen($password) >= 6;
+    }
+
+    public static function insertSuccess($success) {
+        return "Added successfully";
+    }
+}
+
+?>
+
+-------------------------------------------------------------------------------------------------------------
+that is a form 
+----------------------------------------------------------------
+<?php
+include './Layoutes/header.php';
+include './Layoutes/nav.php';
+include './HelperClasses/functionalty.php';
+include './HelperClasses/FormHandler.php';
+
+// Initialize variables with default values
+$name = '';
+$email = '';
+$department = '';
+$password = '';
+$errors = [];
+$success=[];
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $department = $_POST['department'];
+    $password = $_POST['password'];
+
+    $errors = FormHandler::handleFormSubmission($name, $email, $department, $password);
+    $success = FormHandler::handleFormSubmission($success);
+}
+
+
+// Rest of your code remains unchanged
+?>
+<!-- Content -->
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12 p-3 shadow rounded">
+            <h2 class="p-3 col text-center mt-3 text-white bg-dark rounded">
+                <?php echo FileProcessor::fileNameFromUrl() ?>
+            </h2>
+            <div class="container p-3 mt-3 custom-form">
+                <div class="alert alert-success">
+                    <?php if (isset($errors['name'])): ?>
+                            <div class="text-danger"><?php echo $errors['name']; ?></div>
+                    <?php endif; ?>
+                </div>
+                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name:</label>
+                        <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($name); ?>">
+                        <?php if (isset($errors['name'])): ?>
+                            <div class="text-danger"><?php echo $errors['name']; ?></div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>">
+                        <?php if (isset($errors['email'])): ?>
+                            <div class="text-danger"><?php echo $errors['email']; ?></div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="department" class="form-label">Department:</label>
+                        <select class="form-select" id="department" name="department">
+                            <option value="">Select a department</option>
+                            <option value="HR" <?php if ($department === 'HR') echo 'selected'; ?>>HR</option>
+                            <option value="IT" <?php if ($department === 'IT') echo 'selected'; ?>>IT</option>
+                            <option value="Marketing" <?php if ($department === 'Marketing') echo 'selected'; ?>>Marketing</option>
+                            <!-- Add more department options as needed -->
+                        </select>
+                        <?php if (isset($errors['department'])): ?>
+                            <div class="text-danger"><?php echo $errors['department']; ?></div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password:</label>
+                        <input type="password" class="form-control" id="password" name="password">
+                        <?php if (isset($errors['password'])): ?>
+                            <div class="text-danger"><?php echo $errors['password']; ?></div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary" name="submit">Submit</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php include './Layoutes/footer.php'; ?>
+
+-----------------------------------------------------------
+i want to generate just function of success 
+------------------------------------------------
+$success=[];
+$success = FormHandler::handleFormSubmission($success);
+==============================================
+<div class="alert alert-success">
+    <?php if (isset($errors['name'])): ?>
+            <div class="text-danger"><?php echo $errors['name']; ?></div>
+    <?php endif; ?>
+</div>
+=================================================
+public static function insertSuccess($success) {
+    return "Added successfully";
+}
+=================================================
+$success=[];
+$success = $db->insert($sql);
+    if (!self::insertSuccess($success)) {
+        $sucess['success'] = "success";
+    }
+                
