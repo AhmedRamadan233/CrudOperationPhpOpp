@@ -13,6 +13,7 @@ class DataBase {
         }
     }
 
+    // insert data into database
     public function insert($sql){
         if (mysqli_query($this->conn, $sql)) {
             // Query executed successfully
@@ -21,6 +22,41 @@ class DataBase {
             die("Failed to execute : " . mysqli_error($this->conn));
         }
     }
+
+
+    // read data from database
+    public function read($table)
+    {
+        $sql = "SELECT * FROM $table";
+        $result = mysqli_query($this->conn, $sql);
+
+        if ($result) {
+            $data = [];
+            if (mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $data[] = $row;
+                }
+            }
+            return $data;
+        } else {
+            die("Error: " . mysqli_error($this->conn));
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public function enc_password($password){
         return sha1($password);
