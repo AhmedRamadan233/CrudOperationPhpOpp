@@ -42,7 +42,7 @@ $tableData = $db->read('employees'); // Replace with your table name
                                 <td><?php echo $row['department']; ?></td>
                                 <td>
                                     <button type="button" class="btn btn-primary">Edit</button> |
-                                    <button type="button" class="btn btn-danger">Edit</button>
+                                    <button type="button" class="btn btn-danger">delete</button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

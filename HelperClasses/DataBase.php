@@ -44,20 +44,6 @@ class DataBase {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public function enc_password($password){
         return sha1($password);
     }
